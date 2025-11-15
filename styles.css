@@ -1,4 +1,4 @@
-:root { --bg:#0b0c0f; --fg:#eaeef2; --muted:#aeb6bf; }
+:root { --bg:#eef0f4; --fg:#959aa0; --muted:#aeb6bf; }
 * { box-sizing:border-box; }
 html,body { height:100%; }
 body { margin:0; padding:1rem; font:100%/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:var(--fg); background:var(--bg); max-width:90rem; margin-inline:auto; display:grid; gap:1rem; }
