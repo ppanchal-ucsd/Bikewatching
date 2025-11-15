@@ -12,6 +12,8 @@ const map = new mapboxgl.Map({
   maxZoom: 18
 });
 
+map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
 const svg = d3.select('#map').select('svg');
 
 function minutesSinceMidnight(iso) {
@@ -24,8 +26,8 @@ function formatTime(minutes) {
 }
 function getCoords(station) {
   const pt = new mapboxgl.LngLat(+station.lon, +station.lat);
-  const { x, y } = map.project(pt);
-  return { cx: x, cy: y };
+  const p = map.project(pt);
+  return { cx: p.x, cy: p.y };
 }
 
 let stations = [];
@@ -127,6 +129,7 @@ map.on('load', async () => {
   map.on('zoom', updatePositions);
   map.on('resize', updatePositions);
   map.on('moveend', updatePositions);
+  map.on('render', updatePositions);
 
   const slider = document.getElementById('time-slider');
   const selectedTime = document.getElementById('selected-time');
