@@ -14,8 +14,6 @@ const map = new mapboxgl.Map({
 
 map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-const svg = d3.select('#map').select('svg');
-
 function minutesSinceMidnight(iso) {
   const t = new Date(iso);
   return t.getHours() * 60 + t.getMinutes();
@@ -30,6 +28,7 @@ function getCoords(station) {
   return { cx: p.x, cy: p.y };
 }
 
+let svg;               
 let stations = [];
 let trips = [];
 let timeFilter = -1;
@@ -48,6 +47,8 @@ function computeStationTraffic(stationsInput, tripsInput) {
 }
 
 function updateScatterPlot(currentMinutes) {
+  if (!svg) return;  
+
   const filteredTrips = currentMinutes === -1
     ? trips
     : trips.filter(t => {
@@ -82,6 +83,16 @@ function updatePositions() {
 }
 
 map.on('load', async () => {
+  svg = d3.select(map.getCanvasContainer())
+    .append('svg')
+    .attr('class', 'd3-overlay')
+    .style('position', 'absolute')
+    .style('top', 0)
+    .style('left', 0)
+    .style('width', '100%')
+    .style('height', '100%')
+    .style('pointer-events', 'none');
+
   map.addSource('boston_route', {
     type: 'geojson',
     data: 'https://bostonopendata-boston.opendata.arcgis.com/datasets/boston::existing-bike-network-2022.geojson'
@@ -125,11 +136,7 @@ map.on('load', async () => {
 
   updateScatterPlot(timeFilter);
 
-  map.on('move', updatePositions);
-  map.on('zoom', updatePositions);
-  map.on('resize', updatePositions);
-  map.on('moveend', updatePositions);
-  map.on('render', updatePositions);
+  map.on('move zoom resize moveend render', updatePositions);
 
   const slider = document.getElementById('time-slider');
   const selectedTime = document.getElementById('selected-time');
@@ -151,3 +158,4 @@ map.on('load', async () => {
   slider.addEventListener('input', updateTimeDisplay);
   updateTimeDisplay();
 });
+
